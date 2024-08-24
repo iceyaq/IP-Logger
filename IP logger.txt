@@ -1,0 +1,114 @@
+-- Services
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+
+-- Create the main GUI
+local function createMainGui()
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "IPLoggerGui"
+    ScreenGui.Parent = Players.LocalPlayer.PlayerGui
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 300, 0, 200)
+    Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Frame.Parent = ScreenGui
+
+    local TextBox = Instance.new("TextBox")
+    TextBox.Size = UDim2.new(0, 260, 0, 50)
+    TextBox.Position = UDim2.new(0.5, -130, 0.3, 0)
+    TextBox.PlaceholderText = "Enter username/display name"
+    TextBox.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TextBox.Parent = Frame
+
+    local LogButton = Instance.new("TextButton")
+    LogButton.Size = UDim2.new(0, 260, 0, 50)
+    LogButton.Position = UDim2.new(0.5, -130, 0.4, 0)
+    LogButton.Text = "Log IP"
+    LogButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    LogButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    LogButton.Parent = Frame
+
+    local MessageLabel = Instance.new("TextLabel")
+    MessageLabel.Size = UDim2.new(0, 260, 0, 50)
+    MessageLabel.Position = UDim2.new(0.5, -130, 0.5, 0)
+    MessageLabel.Text = ""
+    MessageLabel.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    MessageLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+    MessageLabel.Parent = Frame
+end
+
+-- Create the notification GUI
+local function createNotificationGui()
+    local NotificationGui = Instance.new("ScreenGui")
+    NotificationGui.Name = "NotificationGui"
+    NotificationGui.Parent = Players.LocalPlayer.PlayerGui
+
+    local NotificationFrame = Instance.new("Frame")
+    NotificationFrame.Size = UDim2.new(0, 300, 0, 100)
+    NotificationFrame.Position = UDim2.new(0.5, -150, 0.1, 0)
+    NotificationFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    NotificationFrame.Parent = NotificationGui
+
+    local NotificationLabel = Instance.new("TextLabel")
+    NotificationLabel.Size = UDim2.new(1, 0, 1, 0)
+    NotificationLabel.Text = "IP Logger Made By Me (rux0_0)\nDiscord - rux0_0\n\nDisclaimer: This Is Fake So Not Really Pulling Players' IPs."
+    NotificationLabel.TextWrapped = true
+    NotificationLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    NotificationLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    NotificationLabel.Parent = NotificationFrame
+end
+
+-- Generate a random location
+local function getRandomLocation()
+    local cities = {
+        "Paris", "London", "Tokyo", "Sydney", "Berlin",
+        "Toronto", "Istanbul", "Moscow", "Dubai", "Rome",
+        "Rio de Janeiro", "Buenos Aires", "Cape Town", "Seoul", "Mumbai",
+        "Singapore", "Hong Kong", "Vienna", "Prague", "Budapest",
+        "Athens", "Zurich", "Stockholm", "Copenhagen", "Lisbon",
+        "Oslo", "Helsinki", "Warsaw", "Brussels", "Amsterdam",
+        "Dubai", "Santiago", "Mexico City", "San Francisco", "Los Angeles",
+        "New York", "Chicago", "Boston", "Philadelphia", "Miami"
+    }
+    return cities[math.random(#cities)]
+end
+
+-- Handle IP logging with advanced error handling
+local function logIP(username)
+    local success, result = pcall(function()
+        local randomLocation = getRandomLocation()
+        local message = "Logging IP for " .. username .. " from " .. randomLocation .. "...\nSaved!"
+        return message
+    end)
+    if not success then
+        return "An error occurred while logging IP."
+    end
+    return result
+end
+
+-- Main execution
+createMainGui()
+createNotificationGui()
+
+-- Connect button click with advanced error handling
+local function onLogButtonClick()
+    local TextBox = Players.LocalPlayer.PlayerGui:FindFirstChild("IPLoggerGui"):FindFirstChild("Frame"):FindFirstChild("TextBox")
+    local MessageLabel = Players.LocalPlayer.PlayerGui:FindFirstChild("IPLoggerGui"):FindFirstChild("Frame"):FindFirstChild("TextLabel")
+
+    local username = TextBox.Text
+    if username and username ~= "" then
+        local success, result = xpcall(function()
+            local message = logIP(username)
+            MessageLabel.Text = message
+        end, function(err)
+            MessageLabel.Text = "Failed to log IP: " .. err
+        end)
+    else
+        MessageLabel.Text = "Please enter a username/display name."
+    end
+end
+
+local LogButton = Players.LocalPlayer.PlayerGui:FindFirstChild("IPLoggerGui"):FindFirstChild("Frame"):FindFirstChild("TextButton")
+LogButton.MouseButton1Click:Connect(onLogButtonClick)
